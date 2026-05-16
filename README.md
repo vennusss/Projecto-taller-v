@@ -5,7 +5,7 @@ La eficiencia es importante a la hora de programar, se busca que el codigo haga 
 ## Solucion 1: Arreglo Dinamico
 La Solución 1 consiste en implementar una estructura de datos basada en un arreglo dinámico ordenado lexicográficamente, donde cada celda almacena una palabra. La estructura aumenta automáticamente su capacidad cuando el arreglo se llena, utilizando un overhead para evitar redimensionamientos constantes. Además, la búsqueda se optimiza mediante una adaptación de la búsqueda binaria, acotando primero el rango según la letra inicial de la palabra usando un arreglo auxiliar de índices.
 
-## Solución 2: 
+## Solución 2: Grilla de Listas enlazadas
 La solución 2 consiste en una estructura de datos organizada como una grilla multinivel de nodos doblemente enlazados, diseñada para almacenar palabras de manera ordenada y optimizar las búsquedas. Cada nivel permite reducir el espacio de búsqueda mediante saltos entre nodos, mejorando el rendimiento respecto a una lista enlazada tradicional.
 
 ## Requisitos
