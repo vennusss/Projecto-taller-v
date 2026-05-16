@@ -4,7 +4,7 @@
 #include <vector>
 #include <chrono>
 #include <map>
-#include "funciones.h"
+#include "solucion2.h"
 using namespace std;
 
 typedef unsigned char uchar;
