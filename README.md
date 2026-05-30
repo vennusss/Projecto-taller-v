@@ -10,9 +10,14 @@ La solución 2 consiste en una estructura de datos organizada como una grilla mu
 
 ## Requisitos
 - Tener el compilador g++ instalado, actualizado y utilizable.
+- Tener makefile a disposición del comando
+
+```bash
+make
+```
 
 ## Pasos
-- 1. Compilar los archivos
+1. Compilar los archivos
 
 Compilar ambas soluciones
 ```bash
@@ -27,7 +32,7 @@ o Compilar Solucion 2
 make S2
 ```
 
-- 2. Ejecutar
+2. Ejecutar
 
 Ejecutar Solucion 1
 ```bash
@@ -40,9 +45,10 @@ Ejecutar Solucion 2
 
 ## Estructura de Archivos
 ```
+├── D1.txt
+├── D2.txt
 ├── demostracion1.cpp
 ├── demostracion2.cpp
-├── funciones.cpp
 ├── solucion1.h
 ├── solucion2.h
 ├── makefile

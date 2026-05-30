@@ -1,6 +1,6 @@
 CC=g++
 CFLAGS=-Wall -std=c++17 -o
-BINS= S1 S2
+BINS= demostracion1 demostracion2
 all: S1 S2
 
 S1:

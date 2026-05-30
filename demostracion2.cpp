@@ -33,26 +33,28 @@ int main(){
     
     auto buscar_i = chrono::high_resolution_clock::now(); // empieza el cronometro
     while(getline(diccionario2, linea)){
-        if (Search(raiz, linea)) sear_e++;
+        if (superSearch(raiz, linea)) sear_e++;
         sear_cont++;
     }
     auto buscar_f = chrono::high_resolution_clock::now(); // termina el cronometro
     chrono::duration<double> buscar_d = buscar_f - buscar_i; // contenedor del tiempo que tardo en buscar todos los valores en la grilla
-
+    
     cout << "Las busquedas tardaron: " << buscar_d.count() << " segundos en total." << endl;
     cout << "Se hicieron: " << sear_cont << " busquedas en total." << endl;
     cout << "Se hicieron: " << sear_e << " busquedas exitosas." << endl;
     
     diccionario2.close();
+    //printLista(raiz);
+
     cout << "==================== Insersiones ==================" << endl;
     
     int nodos_i = cantN;            // cantidad de nodos antes de insertar
     int i = 0;
     diccionario2.open(entradas);
     auto insertar_i = chrono::high_resolution_clock::now(); // empieza el cronometro
-    while(getline(diccionario2, linea) && i < 5000){
+    while(getline(diccionario2, linea) && i <= 5000){
 
-        insertarNodo(&raiz, "Calavera");
+        insertarNodo(&raiz, linea);
         i++;
     }
     auto insertar_f = chrono::high_resolution_clock::now(); // termina el cronometro
@@ -68,8 +70,8 @@ int main(){
     cout << "Y pesa: " << (int)sizeof(nodo)*cantN << " bytes" << endl;
 
     diccionario2.close(); // cerramos el archivo
-
     //printLista(raiz);
+
 
     cout << "================== Eliminaciones ====================" << endl;
     nodos_i = cantN;
@@ -79,7 +81,8 @@ int main(){
     int eliminaciones_e = 0;
     
     while (getline(diccionario2, linea)){
-        if (5000 <= i) if (removeL(&raiz, linea)) eliminaciones_e++;
+        if (5000 <= i) if (superRemove(&raiz, linea)) eliminaciones_e++;
+        //if (superRemove(&raiz, linea)) eliminaciones_e++;
         i++;
     }
     
@@ -94,9 +97,12 @@ int main(){
     cout << "tiene: " << cantN << " nodos." << endl;
     cout << "Y pesa: " << (int)sizeof(nodo)*cantN << " bytes." << endl;
     
+    //printLista(raiz);
+
+
     cout << "================== Fin :3 =====================" << endl;
     
-    cout << "[32mPeso final: " << (float)sizeof(nodo)*cantN/1000000 << " megabytes." << endl;
+    cout << "Peso final: " << (float)sizeof(nodo)*cantN/1000000 << " megabytes." << endl;
 
 
     return 0;

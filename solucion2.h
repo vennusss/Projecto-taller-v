@@ -91,34 +91,6 @@ void printLista(nodo *R){
     //cout << endl;
 }
 
-// Busca en una grilla
-bool Search(nodo* R, string valor){
-    // si la lista esta vacia
-    if (R == nullptr){
-        return false;
-    }
-    // si el valor es menor a la primera palabra
-    if (R->key > valor){
-        return false;
-    }
-
-    // si el valor es igual a la primera palabra return true;
-    if (R->key == valor){
-        return true;
-    }
-    
-    // si a la derecha del primer nodo es nulo
-    if (R->right == nullptr) return Search(R->up, valor);
-    nodo* p = R;
-
-    while (p->right->right != nullptr && valor > p->right->key) p = p->right;
-
-    if (p->key != valor && p->right == nullptr) return Search(p->up, valor);
-    if (p->right != nullptr && p->right->key > valor) return Search(p->up, valor);
-    if (p->right != nullptr && p->right->key < valor) return Search(p->right->up, valor);
-    if (p->right != nullptr && p->right->key == valor) return true;
-    return false;
-}
 
 void insertarNodo(nodo **R, string nueva_key){
     //cout << "Insertando nodo.." << endl;
@@ -169,67 +141,60 @@ void insertarNodo(nodo **R, string nueva_key){
     }
     
     // Insertando nodo
-    if (p->key <= nueva_key){
-        q->right = p->right;
-        p->right = q;
-        inserciones++;
-        cantN++;
-        return;
+    if (p->key < nueva_key){
+        if (p->right != nullptr && p->right->key != nueva_key){
+            q->right = p->right;
+            p->right = q;
+            inserciones++;
+            cantN++;
+            return;
+        }
+        if (p->right == nullptr){
+            q->right = p->right;
+            p->right = q;
+            inserciones++;
+            cantN++;
+            return;
+        }
     }
+    delete q;
+    return;
       
 }
 
-// Si el elemento x esta en la lista lo remueve y retorna true
-// si no retorna false
-// si el x esta en la raiz entonces no se eliminara y retorna false
-bool removeL(nodo** R, string valor){
-    // si R esta vacio
-    if (R == nullptr || *R == nullptr){
-        return false;
-    }
+bool superSearch(nodo* R, string valor){
+    if (R == nullptr) return false;
 
-    // si el valor a eliminar es menor al primero
-    if (valor < (*R)->key){
-        return false;
-    }
+    nodo* p = R;
 
-    // si el valor es igual a la primera palabra return false;
-    if ((*R)->key == valor){
-        return false;
-    }
+    if (p->key == valor) return true;
 
-    // si a la derecha del primer nodo es nulo
-    if ((*R)->right == nullptr) {
-        return removeL(&((*R)->up), valor);
-    }
+    while (p->right != nullptr && p->right->key < valor) p = p->right;
+
+    if (p->right != nullptr && p->right->key == valor) return true;
+    else return superSearch(p->up, valor);
+    return false;
+
+}
+
+bool superRemove(nodo** R, string valor){
+    if ((*R) == nullptr) return false;
+    
     nodo* p = *R;
-    
-    // deja p en el nodo menor al nodo del valor si es que esta o no
-    while (p->right->right != nullptr && valor > p->right->key) p = p->right;
 
-    // si puntero derecho es nulo sube
-    if (p->key != valor && p->right == nullptr) {
-        return removeL(&(p->up), valor);
-    }
-    
-    // si la derecha es mayor que el valor, sube desde p
-    if ( p->right->key > valor) {
-        return removeL(&(p->up), valor);
-    }
-    
-    // si la derecha es menor al valor, sube desde la derecha
-    if (p->right->key < valor) {
-        return removeL(&(p->right->up), valor);
-    }
-    
-    // si la derecha es el valor que busco
-    if (p->right->key == valor) {
+    if (p->key >= valor) return false;
+
+    while(p->right != nullptr && p->right->key < valor) p = p->right;
+
+    if (p->right != nullptr && p->right->key == valor) {
         nodo* aux = p->right;
-        removeL(&(p->up), valor);
         p->right = aux->right;
+        aux->up = nullptr;
         delete aux;
         cantN--;
+        superRemove(&(p->up), valor);
         return true;
     }
-    return false;   
+    else return superRemove(&(p->up), valor);
+    return false;
 }
