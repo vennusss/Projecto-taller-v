@@ -114,8 +114,8 @@ void eliminando(uchar* palabra, vector<uchar*>&diccionario, map<uchar, int>&abce
     int indice_eliminar= indicebinario(diccionario, abcedario, palabra, cantidad);
     for(int i=indice_eliminar; i<cantidad-1; i++){
         diccionario[i]=diccionario[i+1];
-    cantidad--;
     }
+    cantidad--;
     char c = palabra[0] + 1;
     while (c <= 'z' && c!='a') {
         abcedario[c]--;

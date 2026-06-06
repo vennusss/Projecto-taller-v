@@ -8,13 +8,21 @@ La Solución 1 consiste en implementar una estructura de datos basada en un arre
 ## Solución 2: Grilla de Listas enlazadas
 La solución 2 consiste en una estructura de datos organizada como una grilla multinivel de nodos doblemente enlazados, diseñada para almacenar palabras de manera ordenada y optimizar las búsquedas. Cada nivel permite reducir el espacio de búsqueda mediante saltos entre nodos, mejorando el rendimiento respecto a una lista enlazada tradicional.
 
+## Solución 3: Arbol de busqueda K-ario
+La Solución 3 consiste en un arbol K-ario que almacena K palabras y con cada nodo teniendo K + 1 hijos, resultdos teoricos en espera.
+
 ## Requisitos
 - Tener el compilador g++ instalado, actualizado y utilizable.
+- Tener makefile a disposición del comando
+
+```bash
+make
+```
 
 ## Pasos
-- 1. Compilar los archivos
+1. Compilar los archivos
 
-Compilar ambas soluciones
+Compilar todas las soluciones
 ```bash
 make
 ```
@@ -26,8 +34,12 @@ o Compilar Solucion 2
 ```bash
 make S2
 ```
+o Compilar Solucion 3
+```bash
+make S3
+```
 
-- 2. Ejecutar
+2. Ejecutar
 
 Ejecutar Solucion 1
 ```bash
@@ -37,14 +49,21 @@ Ejecutar Solucion 2
 ```bash
 ./demostracion2
 ```
+Ejecutar Solucion 3
+```bash
+./demostracion3
+```
 
 ## Estructura de Archivos
 ```
+├── D1.txt
+├── D2.txt
 ├── demostracion1.cpp
 ├── demostracion2.cpp
-├── funciones.cpp
+├── demostracion3.cpp
 ├── solucion1.h
 ├── solucion2.h
+├── solucion3.h
 ├── makefile
 ├── LICENSE
 └── README.md
