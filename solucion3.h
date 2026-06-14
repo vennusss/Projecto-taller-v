@@ -2,7 +2,7 @@
 #include <string>
 using namespace std;
 
-const int K = 2;    // define como se creara el arbol
+const int K = 4;    // define como se creara el arbol
 
 // Estructura de los nodos
 struct TNodo{
@@ -40,32 +40,8 @@ arbol::arbol(){
     this->R = NULL;
 }
 
-// Crea el arbol con un nodo y un valor "val" dentro de ese nodo
-// Solo si n es igual al K
 arbol::arbol(string entradas[], int n){
-    if (n <= K){
-        cout << "Se esta creando la raiz" << endl;
-        nodoT* nuevo = new nodoT; // se crea el nodo
-
-        // en cada posicion en el arreglo se le ingresa su respectivo valor de entrada
-        for (int i = 0; i < n; i++){
-            nuevo->keys[i] = entradas[i]; 
-            nuevo->cantKeys++;
-        }
-
-        // dejamos nulos sus hijos
-        for (int i = 0; i <= K; i++){
-            nuevo->hijos[i] = nullptr;
-        }
-        
-        // definimos R como el nuevo nodo y sumamos a la cantidad de nodos
-        R = nuevo;
-        cantN++;
-    }
-    else {
-        cout << "Se creo vacio porque n es mayor a K" << endl;
-        this->R = nullptr;
-    }
+    
 }
 
 // Destructor del objeto
@@ -82,7 +58,6 @@ void arbol::print(){
     print(R);
     cout << endl;
 }
-
 void arbol::print(nodoT* p){  
     // si es null no imprime nada  
     cout << "|";
@@ -94,16 +69,51 @@ void arbol::print(nodoT* p){
     for (int i = 0; i < p->cantKeys-1; i++){
         cout << p->keys[i] << "-";
     }
-    cout << p->keys[p->cantKeys-1] << "|/";
+    cout << p->keys[p->cantKeys-1] << "|\033[31m[\033[0m ";
 
-    for (int i = 0; i < K; i++){
+    for (int i = 0; i <= K; i++){
         print(p->hijos[i]);
     }
+    cout << "\033[31m ]\033[0m ";
 
 }
 
-// remueve el nodo con el elemento valor
-// retorna true si lo logra, retorna false si no
-bool arbol::remove(string valor){
+/*
+Busca el valor dado dentro del arbol de forma no recursiva
+
+Si lo encuentra retorna true, si no lo encuentra retorna falso
+
+No lo encuentra cuando el nodo en el que se busca es nulo
+*/
+bool arbol::search(string valor){
+    
+    nodoT* p = R;  // nodo que recorre, empzando en la raiz
+    // si el nodo en el que se busca es nulo entonces pasara a retornar falso
+    while (p != nullptr){
+        // si el valor es menor al primer elemento buscara en el hijo que contenga los menores a ese elemento
+        if (p->keys[0] > valor){
+            p = p->hijos[0];    
+        }
+        else {
+            int pos = 0;
+            // si el valor esta en la primera posicion entonces retornara true
+            if (p->keys[pos] == valor){
+                return true;
+            }
+            // recorrera hasta que el elemento en la posicion sea mayor o igual al valor | si es mayor al del final quedara n la posicion n+1 que es la del hijo "mayor"
+            while (pos < p->cantKeys && p->keys[pos] < valor) {
+                pos++;
+            }
+
+            // si el elemento en la posicion es igual al valor retornara true
+            if (p->keys[pos] == valor) return true;
+
+            // si no buscara en el hijo que este en la respectiva posicion
+            else {
+               p = p->hijos[pos];
+            }
+        }
+
+    }
     return false;
 }

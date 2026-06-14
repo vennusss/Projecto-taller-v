@@ -9,11 +9,11 @@ La Solución 1 consiste en implementar una estructura de datos basada en un arre
 La solución 2 consiste en una estructura de datos organizada como una grilla multinivel de nodos doblemente enlazados, diseñada para almacenar palabras de manera ordenada y optimizar las búsquedas. Cada nivel permite reducir el espacio de búsqueda mediante saltos entre nodos, mejorando el rendimiento respecto a una lista enlazada tradicional.
 
 ## Solución 3: Arbol de busqueda K-ario
-La Solución 3 consiste en un arbol K-ario que almacena K palabras y con cada nodo teniendo K + 1 hijos, resultdos teoricos en espera.
+La Solución 3 consiste en un arbol K-ario que almacena K palabras y con cada nodo teniendo K + 1 hijos, esto permitira separar el problema en busquedas mas pequeñas y acotadas, cuyo rendimiento va a depender de que tan balanceado este el arbol y cual sea el K elegido para hacer el arbol.
 
 ## Requisitos
 - Tener el compilador g++ instalado, actualizado y utilizable.
-- Tener makefile a disposición del comando
+- Tener makefile a disposición del comando make
 
 ```bash
 make
