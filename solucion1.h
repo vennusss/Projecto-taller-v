@@ -4,6 +4,7 @@
 #include <map>
 using namespace std;
 typedef unsigned char uchar;
+//editado por vennus
 
 int contador1(vector<uchar*>A){
     int suma=0; 
