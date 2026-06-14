@@ -2,7 +2,7 @@
 #include <string>
 using namespace std;
 
-const int K = 2;    // define como se creara el arbol
+const int K = 4;    // define como se creara el arbol
 
 // Estructura de los nodos
 struct TNodo{
@@ -26,13 +26,16 @@ class arbol{
     ~arbol();
 
     // Funciones a utilizar
+    void construye_arbol(nodoT** R);
     void print();
     void print(nodoT* p);
     nodoT* getRoot();
     int getK();
     bool search(string valor);
-    bool insert(string valor);
+    bool insert(nodoT* r, string valor);
+    bool arbol::insertInNodo(nodoT* r, string key, int i);
     bool remove(string valor);
+
 };
 
 // Crea el arbol vacio
@@ -63,7 +66,7 @@ arbol::arbol(string entradas[], int n){
         cantN++;
     }
     else {
-        cout << "Se creo vacio porque n es mayor a K" << endl;
+        cout << "Se creo´ vacio porque n es mayor a K" << endl;
         this->R = nullptr;
     }
 }
@@ -101,7 +104,45 @@ void arbol::print(nodoT* p){
     }
 
 }
+// inserta nodos con key = parametro de la funcion
+//retorna true si lo logra, false si no
+bool arbol::insert(nodoT* r, string key){
+    // si nodo vacío
+    if (r->keys[0] == ""){
+        r->keys[0] = key;
+        r->cantKeys++;
+        return true;
+    }
+    // si key menor a la primera key en nodo
+    if (r->keys[0]> key) return insert(r->hijos[0], key);
 
+    // buscamos indice para insertar y si ya está en nodo => retorna falso
+    int i = r->cantKeys - 1;
+    bool inNodo = false;
+    while (i >=0 && r->keys[i] > key){
+        if (r->keys[i] == key) inNodo = true;
+        i--;
+    }
+    if (inNodo) return false;
+
+    // si key mayor a la ultima palabra
+    if (r->keys[r->cantKeys - 1] < key){
+        //si nodo lleno inserta en hijo derecho sino inserta en nodo
+        return (r->cantKeys == K) ? (insert(r->hijos[K+1],key)) : (insertInNodo(r, key,));
+    }
+    
+    // si nodo lleno inserta en hijo[i] sino inserta en nodo
+    return (r->cantKeys == K) ? (insert(r->hijos[i+1], key)) : (insertInNodo(r, key, i + 1));
+    
+    return false;
+}
+bool arbol::insertInNodo(nodoT* r, string key, int i){
+    for (int j=r->cantKeys; j>i; j--){
+        r->keys[j] = r->keys[j-1];
+    }
+    r->keys[i] = key;
+    return true;
+}
 // remueve el nodo con el elemento valor
 // retorna true si lo logra, retorna false si no
 bool arbol::remove(string valor){
