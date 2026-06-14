@@ -137,7 +137,7 @@ bool arbol::insertInNodo(nodoT** p, string key){
 }
 
 /*
-Busca el valor dado dentro del arbol de forma no recursiva
+Busca el valor dado dentro del arbol
 
 Si lo encuentra retorna true, si no lo encuentra retorna falso
 
