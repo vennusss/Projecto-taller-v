@@ -2,7 +2,8 @@
 #include <string>
 using namespace std;
 
-const int K = 4;    // define como se creara el arbol
+const int K = 4; 
+int pos=0;   // define como se creara el arbol
 
 // Estructura de los nodos
 struct TNodo{
@@ -34,8 +35,12 @@ class arbol{
     bool search(string valor);
     bool insert(string valor);
     bool insertInNodo(nodoT** p,string key);
-    bool remove(string valor);
+    bool remove(string valor, nodoT* p, int &pos);
     bool nodoLLeno(nodoT* p);
+    nodoT* buscarnodo(nodoT*p, string valor );
+    nodoT* obtenerPadre(nodoT* hijoBuscado);
+    nodoT* obtenerPadreRec(nodoT* actual, nodoT* hijoBuscado);
+
 
 };
 
@@ -174,4 +179,136 @@ bool arbol::search(string valor){
 
     }
     return false;
+}
+bool arbol::remove(string valor, nodoT* p, int &pos){
+    p = buscarnodo(R, valor);
+
+    if (p == nullptr)
+        return false;
+
+    if(pos < 0 || pos >= p->cantKeys)
+        return false;
+
+    
+    if (p->hijos[0] == nullptr && p->hijos[1] == nullptr && p->hijos[2] == nullptr && p->hijos[3] == nullptr && p->hijos[4] == nullptr){
+        if (p->cantKeys == 1){
+            nodoT* padre = obtenerPadre(p);
+            if(padre != nullptr){
+                for(int i = 0; i <= padre->cantKeys; i++){
+                    if(padre->hijos[i] == p){
+                        padre->hijos[i] = nullptr;
+                        break;
+                    }
+                }
+            }
+            else{
+                R = nullptr;
+            }
+            delete p;
+            return true;
+        }
+
+        for(int i = pos; i < p->cantKeys - 1; i++){
+            p->keys[i] = p->keys[i + 1];
+        }
+
+        p->cantKeys--;
+        p->keys[p->cantKeys] = "";
+        return true;
+    }
+    if(pos + 1 > K)
+        return false;
+
+    nodoT* menor = p->hijos[pos + 1];
+
+    if (menor == nullptr)
+        return false;
+
+    while (menor->hijos[0] != nullptr){
+        menor = menor->hijos[0];
+    }
+    p->keys[pos] = menor->keys[0];
+    for(int i = 0; i < menor->cantKeys - 1; i++){
+        menor->keys[i] = menor->keys[i + 1];
+    }
+
+    menor->cantKeys--;
+    menor->keys[menor->cantKeys] = "";
+
+    if(menor->cantKeys == 0){
+        int hijosNoNulos = 0;
+        for(int i = 0; i <= K; i++){
+            if(menor->hijos[i] != nullptr)
+                hijosNoNulos++;
+        }
+        nodoT* padre = obtenerPadre(menor);
+        nodoT* reemplazo = nullptr;
+        for(int i = 0; i <= K; i++){
+            if(menor->hijos[i] != nullptr){
+                reemplazo = menor->hijos[i];
+                break;
+            }
+        }
+        if(padre != nullptr){
+            for(int i = 0; i <= padre->cantKeys; i++){
+                if(padre->hijos[i] == menor){
+                    padre->hijos[i] = reemplazo;
+                    break;
+                }
+            }
+        }
+        else{
+            R = reemplazo;
+        }
+        delete menor;
+    }
+    return true;
+}
+
+nodoT* arbol::buscarnodo(nodoT*p, string valor ){
+    p=R;
+    while (p != nullptr){
+        pos =0;
+        if (p->cantKeys == 0)
+            return nullptr;
+        if (p->keys[0] > valor){
+            p = p->hijos[0];    
+        }
+        else {
+            while (pos < p->cantKeys && p->keys[pos] < valor) {
+                pos++;
+            }
+            if ( pos < p->cantKeys && p->keys[pos] == valor) 
+                return p;
+            else {
+               p = p->hijos[pos];
+            }
+        }
+    }
+    return nullptr;
+}
+
+nodoT* arbol::obtenerPadre(nodoT* hijoBuscado) {
+    if (R == nullptr || R == hijoBuscado)
+        return nullptr; 
+
+    return obtenerPadreRec(R, hijoBuscado);
+}
+
+nodoT* arbol::obtenerPadreRec(nodoT* actual, nodoT* hijoBuscado) {
+    if (actual == nullptr)
+        return nullptr;
+
+    for (int i = 0; i <= actual->cantKeys; i++) {
+        if (actual->hijos[i] == hijoBuscado)
+            return actual;
+    }
+
+    for (int i = 0; i <= actual->cantKeys; i++) {
+        nodoT* padre = obtenerPadreRec(actual->hijos[i], hijoBuscado);
+        if (padre != nullptr)
+            return padre;
+    }
+
+    return nullptr;
 }
