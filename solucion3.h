@@ -32,8 +32,8 @@ class arbol{
     nodoT* getRoot();
     int getK();
     bool search(string valor);
-    bool insert(nodoT* r, string valor);
-    bool arbol::insertInNodo(nodoT* r, string key, int i);
+    bool insert(nodoT** r, string valor);
+    bool arbol::insertInNodo(nodoT** r, string key);
     bool remove(string valor);
 
 };
@@ -82,43 +82,60 @@ void arbol::print(nodoT* p){
 }
 // inserta nodos con key = parametro de la funcion
 //retorna true si lo logra, false si no
-bool arbol::insert(nodoT* r, string key){
+bool arbol::insert(nodoT** r, string key){
     // si nodo vacío
-    if (r->keys[0] == ""){
-        r->keys[0] = key;
-        r->cantKeys++;
+    if (*r == nullptr){
+        *r = new nodoT;
+        for (int i=0;i<=K;i++) (*r)->hijos[i] = nullptr;
+        (*r)->keys[0] = key;
+        (*r)->cantKeys++;
         return true;
     }
-    // si key menor a la primera key en nodo
-    if (r->keys[0]> key) return insert(r->hijos[0], key);
-
-    // buscamos indice para insertar y si ya está en nodo => retorna falso
-    int i = r->cantKeys - 1;
+    nodoT* p = *r;
     bool inNodo = false;
-    while (i >=0 && r->keys[i] >= key){
-        if (r->keys[i] == key) inNodo = true;
-        i--;
+    // si nodo lleno
+    if (p->cantKeys == K ){
+        // si key es menor a primera key en nodo
+        if (p->keys[0] > key) return insert(&(p->hijos[0]), key);
+        // si key es mayor a ultima key
+        if (p->keys[K-1] < key) return insert (&(p->hijos[K]), key);
+        // buscamos indice donde insertar, si está en nodo => retorna falso
+        int i = K - 2;
+        while (i >= 0 && p->keys[i] >= key){
+            if (p->keys[i] == key) inNodo = true;
+            i--;
+        }
+        if (inNodo) return false;
+        
+        return insert(&(p->hijos[i + 1]), key);
     }
-    if (inNodo) return false;
-
-    // si key mayor a la ultima palabra
-    if (r->keys[r->cantKeys - 1] < key){
-        //si nodo lleno inserta en hijo derecho sino inserta en nodo
-        return (r->cantKeys == K) ? (insert(r->hijos[K+1],key)) : (insertInNodo(r, key, i));
+    else{
+        return insertInNodo(&p, key);
     }
-
-    // si nodo lleno inserta en hijo[i] sino inserta en nodo
-    return (r->cantKeys == K) ? (insert(r->hijos[i+1], key)) : (insertInNodo(r, key, i + 1));
-    
     return false;
 }
-bool arbol::insertInNodo(nodoT* r, string key, int i){
-    for (int j=r->cantKeys; j>i; j--){
-        r->keys[j] = r->keys[j-1];
+bool arbol::insertInNodo(nodoT** r, string key){
+    nodoT* p = *r;
+    // si key en arreglo => no inserta
+    if (binarySearchRec(p->keys, 0, p->cantKeys - 1, key)) return false;
+
+    int i = p->cantKeys;
+    // buscamos indice donde insertar
+    while (i > 0 && p->keys[i - 1] > key){
+        p->keys[i] = p->keys[i - 1];
+        i--;
     }
-    r->keys[i] = key;
-    r->cantKeys++;
+    p->keys[i] = key;
+    p->cantKeys++;
     return true;
+}
+
+bool binarySearchRec(string* keys, int l, int r, string x){
+    if (l > r) return false;
+    int m = (l + r) / 2;
+    if (x < keys[m]) return binarySearchRec(keys, l, m-1, x);
+    if (x == keys[m]) return true;
+    return binarySearchRec(keys, m+1, r, x);
 }
 
 /*
