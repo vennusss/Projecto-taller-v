@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 using namespace std;
 
 const int K = 4; 
@@ -27,14 +28,21 @@ class arbol{
     ~arbol();
 
     // Funciones a utilizar
-    void construye_arbol(nodoT** R);
+    void cargarDiccionario(vector<string>& palabras, int l, int ri);
     void print();
     void print(nodoT* p);
+
     nodoT* getRoot();
-    int getK();
+    int getCantN();
+
     bool search(string valor);
+
     bool insert(string valor);
-    bool insertInNodo(nodoT** p,string key);
+    bool insert(nodoT** r, string valor);
+    bool insertInNodo(nodoT* p,string key);
+    bool binarySearchRec(string* keys, int l, int r, string x);
+
+    bool remove(string valor);
     bool remove(string valor, nodoT* p, int &pos);
     bool nodoLLeno(nodoT* p);
     nodoT* buscarnodo(nodoT*p, string valor );
@@ -61,6 +69,9 @@ arbol::~arbol(){
 // obtiene la raiz
 nodoT* arbol::getRoot(){
     return R;
+}
+int arbol::getCantN(){
+    return cantN;
 }
 
 void arbol::print(){    
@@ -91,54 +102,67 @@ void arbol::print(nodoT* p){
 bool arbol::nodoLLeno(nodoT* p){
     return (p->cantKeys == K) ? true : false;
 }
-
+bool arbol::insert(string valor){
+    return insert(&R, valor);
+}
 
 // inserta nodos con key = parametro de la funcion
 //retorna true si lo logra, false si no
-bool arbol::insert(string key){
-    if (R == nullptr){
-        nodoT* nuevo = new nodoT;
-        nuevo->cantKeys++;
-        nuevo->keys[0] = key;
-        for (int i = 0; i <= K; i++){
-            nuevo->hijos[i] = nullptr;
-        }
-        R = nuevo;
+bool arbol::insert(nodoT** r, string key){
+    // si nodo vacío
+    if (*r == nullptr){
+        *r = new nodoT;
+        cantN++;
+        for (int i=0;i<=K;i++) (*r)->hijos[i] = nullptr;
+        (*r)->keys[0] = key;
+        (*r)->cantKeys++;
         return true;
     }
-    nodoT* q = R;
-    while (q != nullptr){
-        nodoT* p = q;
-        int pos = 0;
-        if (q->keys[0] > key){
-            if (nodoLLeno(q)){
-                p = q;
-                q = q->hijos[0];
-            }
-            else {
-                return insertInNodo(&q, key);
-            }
+    nodoT* p = *r;
+    bool inNodo = false;
+    // si nodo lleno
+    if (p->cantKeys == K ){
+        // si key es menor a primera key en nodo
+        if (p->keys[0] > key) return insert(&(p->hijos[0]), key);
+        // si key es mayor a ultima key
+        if (p->keys[K-1] < key) return insert(&(p->hijos[K]), key);
+        // buscamos indice donde insertar, si está en nodo => retorna falso
+        int i = K-1;
+        while (i >= 0 && p->keys[i] >= key){
+            if (p->keys[i] == key) inNodo = true;
+            i--;
         }
-              
+        if (inNodo) return false;
+        
+        return insert(&(p->hijos[i + 1]), key);
+    }
+    else{
+        return insertInNodo(p, key);
     }
     return false;
 }
-bool arbol::insertInNodo(nodoT** p, string key){
-    int pos = 0;
-    nodoT* q = *p;
-    for (int i = 0; i < q->cantKeys-1; i++){
-        if (q->keys[i] == key) return false;
-        if (q->keys[i] < key){
-            pos++;
-        }
-        else break;
+bool arbol::insertInNodo(nodoT* r, string key){
+    nodoT* p = r;
+    // si key en arreglo => no inserta
+    if (binarySearchRec(p->keys, 0, p->cantKeys - 1, key)) return false;
+
+    int i = p->cantKeys;
+    // buscamos indice donde insertar
+    while (i > 0 && p->keys[i - 1] > key){
+        p->keys[i] = p->keys[i - 1];
+        i--;
     }
-    for (int i = q->cantKeys; i > pos; i--){
-        q->keys[i] = q->keys[i-1];
-    }
-    q->keys[pos] = key;
-    q->cantKeys++;
+    p->keys[i] = key;
+    p->cantKeys++;
     return true;
+}
+
+bool arbol::binarySearchRec(string* keys, int l, int r, string x){
+    if (l > r) return false;
+    int m = (l + r) / 2;
+    if (x < keys[m]) return binarySearchRec(keys, l, m-1, x);
+    if (x == keys[m]) return true;
+    return binarySearchRec(keys, m+1, r, x);
 }
 
 /*
@@ -180,6 +204,9 @@ bool arbol::search(string valor){
     }
     return false;
 }
+bool arbol::remove(string valor){
+    return remove(valor, R, pos);
+}
 bool arbol::remove(string valor, nodoT* p, int &pos){
     // busca el nodo que contiene el elemento a eliminar
     p = buscarnodo(R, valor);
@@ -218,7 +245,7 @@ bool arbol::remove(string valor, nodoT* p, int &pos){
                 R = nullptr;
             }
             delete p;
-            cantN --;
+            cantN--;
             return true;
         }
         //si el nodo tiene mas de un elemento mueve  los elementos hacia la izquierda
