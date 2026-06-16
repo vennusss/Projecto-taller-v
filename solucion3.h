@@ -208,18 +208,30 @@ bool arbol::remove(string valor){
     return remove(valor, R, pos);
 }
 bool arbol::remove(string valor, nodoT* p, int &pos){
+    // busca el nodo que contiene el elemento a eliminar
     p = buscarnodo(R, valor);
-
+    //si el nodo no exixte, no se elimina nada
     if (p == nullptr)
         return false;
-
-    if(pos < 0 || pos >= p->cantKeys)
+    // verifica que la posicion sea válida
+    if (pos >= p->cantKeys || p->keys[pos] != valor)
         return false;
 
-    
-    if (p->hijos[0] == nullptr && p->hijos[1] == nullptr && p->hijos[2] == nullptr && p->hijos[3] == nullptr && p->hijos[4] == nullptr){
+    // Verificar si es hoja 
+    bool esHoja = true;
+    for (int i = 0; i <= K; i++){
+        if (p->hijos[i] != nullptr){
+            esHoja = false;
+            break;
+        }
+    }
+    //caso 1: es hoja 
+    if (esHoja){
+        //si el nodo tienen un solo elemento
         if (p->cantKeys == 1){
+            //obtiene al padre del nodo
             nodoT* padre = obtenerPadre(p);
+            // si tiene padre, se desconecta del nodo
             if(padre != nullptr){
                 for(int i = 0; i <= padre->cantKeys; i++){
                     if(padre->hijos[i] == p){
@@ -229,32 +241,38 @@ bool arbol::remove(string valor, nodoT* p, int &pos){
                 }
             }
             else{
+                // si es raiz el arbol queda vacio
                 R = nullptr;
             }
             delete p;
             cantN--;
             return true;
         }
-
+        //si el nodo tiene mas de un elemento mueve  los elementos hacia la izquierda
         for(int i = pos; i < p->cantKeys - 1; i++){
             p->keys[i] = p->keys[i + 1];
         }
-
+        //reduce la cantidad de elementos
         p->cantKeys--;
+        //limpia la ultima posicion 
         p->keys[p->cantKeys] = "";
         return true;
     }
-    if(pos + 1 > K)
+    //caso 2: el nodo no es hoja
+    if(pos + 1 > p->cantKeys)// verifica que exista el hijo derecho
         return false;
-
+    // busca el subarbol derecho del elemento a eliminar
     nodoT* menor = p->hijos[pos + 1];
 
     if (menor == nullptr)
         return false;
-
+    //encuentra el menor elemento del subarbol derecho
     while (menor->hijos[0] != nullptr){
         menor = menor->hijos[0];
     }
+    if (menor->cantKeys == 0)
+    return false;
+
     p->keys[pos] = menor->keys[0];
     for(int i = 0; i < menor->cantKeys - 1; i++){
         menor->keys[i] = menor->keys[i + 1];
@@ -263,20 +281,16 @@ bool arbol::remove(string valor, nodoT* p, int &pos){
     menor->cantKeys--;
     menor->keys[menor->cantKeys] = "";
 
-    if(menor->cantKeys == 0){
-        int hijosNoNulos = 0;
-        for(int i = 0; i <= K; i++){
-            if(menor->hijos[i] != nullptr)
-                hijosNoNulos++;
-        }
-        nodoT* padre = obtenerPadre(menor);
-        nodoT* reemplazo = nullptr;
+    if(menor->cantKeys == 0){// si el nodo sucesor queda vacio
+        nodoT* padre = obtenerPadre(menor);//obtiene el padre del nodo vacia
+        nodoT* reemplazo = nullptr;// busca un posible hijo para reemplazarlo
         for(int i = 0; i <= K; i++){
             if(menor->hijos[i] != nullptr){
                 reemplazo = menor->hijos[i];
                 break;
             }
         }
+        //reconecta al arbol
         if(padre != nullptr){
             for(int i = 0; i <= padre->cantKeys; i++){
                 if(padre->hijos[i] == menor){
@@ -286,26 +300,28 @@ bool arbol::remove(string valor, nodoT* p, int &pos){
             }
         }
         else{
+            // actualiza la raiz 
             R = reemplazo;
         }
         delete menor;
+        cantN --;
     }
     return true;
 }
 
 nodoT* arbol::buscarnodo(nodoT*p, string valor ){
-    p=R;
-    while (p != nullptr){
+    p=R;//busqueda desde la raiz
+    while (p != nullptr){//recorre el arbol mientras no sea vacio
         pos =0;
-        if (p->cantKeys == 0)
+        if (p->cantKeys == 0)// si no tiene elementos la busqueda termina 
             return nullptr;
-        if (p->keys[0] > valor){
+        if (p->keys[0] > valor){//si el valor es menor, continua por el hijo izquierdo
             p = p->hijos[0];    
         }
-        else {
+        else {// busca la posicion en donde deberia estar el nodo
             while (pos < p->cantKeys && p->keys[pos] < valor) {
                 pos++;
-            }
+            }//si el elemento fue encontrado, retorna al nodo
             if ( pos < p->cantKeys && p->keys[pos] == valor) 
                 return p;
             else {
@@ -313,30 +329,31 @@ nodoT* arbol::buscarnodo(nodoT*p, string valor ){
             }
         }
     }
-    return nullptr;
+    return nullptr;// el elemento no existe en el arbol
 }
 
 nodoT* arbol::obtenerPadre(nodoT* hijoBuscado) {
+    //si el arbol esta vacio o si el nodo es raiz no hay un padre para retornar
     if (R == nullptr || R == hijoBuscado)
         return nullptr; 
-
+    //busqueda recursiva desde la raiz
     return obtenerPadreRec(R, hijoBuscado);
 }
 
 nodoT* arbol::obtenerPadreRec(nodoT* actual, nodoT* hijoBuscado) {
-    if (actual == nullptr)
+    if (actual == nullptr)//si el nodo es nulo, no busca nada
         return nullptr;
-
+    //recorre los hijos para verificar si alguno es el nodo que se esta buscando
     for (int i = 0; i <= actual->cantKeys; i++) {
         if (actual->hijos[i] == hijoBuscado)
-            return actual;
+            return actual;// es el padre
     }
-
+   //si no se encontro con los hijos se busca recursivamente
     for (int i = 0; i <= actual->cantKeys; i++) {
         nodoT* padre = obtenerPadreRec(actual->hijos[i], hijoBuscado);
         if (padre != nullptr)
-            return padre;
+            return padre;// si encontro al padre lo retorna 
     }
-
+    //retorna nullptr si no se encuentra en ese subarbol
     return nullptr;
 }
