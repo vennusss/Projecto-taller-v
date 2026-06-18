@@ -18,7 +18,6 @@ class arbol{
     private:
     // Nodo principal del Arbol (Raiz)
     nodoT* R = nullptr;
-    
     int cantN = 0;
     
     public:
@@ -28,6 +27,7 @@ class arbol{
     ~arbol();
 
     // Funciones a utilizar
+    void cargarDiccionario(vector<string>& palabras, int l, int ri, nodoT** nodo);
     void cargarDiccionario(vector<string>& palabras, int l, int ri);
     void print();
     void print(nodoT* p);
@@ -210,7 +210,7 @@ bool arbol::remove(string valor){
 bool arbol::remove(string valor, nodoT* p, int &pos){
     // busca el nodo que contiene el elemento a eliminar
     p = buscarnodo(R, valor);
-    //si el nodo no exixte, no se elimina nada
+    //si el nodo no existe, no se elimina nada
     if (p == nullptr)
         return false;
     // verifica que la posicion sea válida
@@ -248,7 +248,7 @@ bool arbol::remove(string valor, nodoT* p, int &pos){
             cantN--;
             return true;
         }
-        //si el nodo tiene mas de un elemento mueve  los elementos hacia la izquierda
+        //si el nodo tiene mas de un elemento mueven los elementos hacia la izquierda
         for(int i = pos; i < p->cantKeys - 1; i++){
             p->keys[i] = p->keys[i + 1];
         }
