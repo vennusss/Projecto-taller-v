@@ -3,7 +3,7 @@
 #include <vector>
 using namespace std;
 
-const int K = 4; 
+const int K = 512; 
 int pos=0;   // define como se creara el arbol
 
 // Estructura de los nodos
