@@ -1,5 +1,13 @@
 #include "solucion3.h"
 #include <fstream>
+#include <cstdlib>
+#include <ctime>
+#include <chrono>
+
+string d1 = "D1.txt";
+string d2 = "D2.txt";
+#define largo_d1 69904
+#define largo_d2 10000
 
 void arbol::cargarDiccionario(vector<string>& palabras, int l, int ri){
     cargarDiccionario(palabras, l, ri, &R);
@@ -36,29 +44,93 @@ void arbol::cargarDiccionario(vector<string>& palabras, int l, int ri, nodoT** n
     // subrango final: [sep[K-2]+1, ri]
     cargarDiccionario(palabras, sep[K - 2] + 1, ri, &((*nodo)->hijos[K - 1]));
 }
+
 int main(){
-    arbol sudowodo;
+    srand(time(nullptr));
+    arbol raiz;
     
-    vector<string> palabras;
+    
+    vector<string> palabras_d1;
+    vector<string> palabras_d2;
     string palabra;
 
-    // Leer diccionario ordenado
-    ifstream archivo("prueba.txt");
-    while(archivo >> palabra)
-        palabras.push_back(palabra);
-    archivo.close();
+    // Leer diccionario 1
+    ifstream archivo_1(d1);
+    while(archivo_1 >> palabra)
+        palabras_d1.push_back(palabra);
+    archivo_1.close();
+    cout << "Arreglo 1 creado" << endl;
+
+    // Leer diccionario 2
+    ifstream archivo_2(d2);
+    while(archivo_2 >> palabra)
+        palabras_d2.push_back(palabra);
+    archivo_2.close();
+    cout << "Arreglo 2 creado" << endl;
 
     // Cargar en el árbol de forma balanceada
-    sudowodo.cargarDiccionario(palabras, 0, palabras.size() - 1);
-    cout << "cantidad de nodos: " << sudowodo.getCantN() << endl;
-    cout << "Peso del arbol: " << sizeof(nodoT) << endl;
+    cout << "================Creacion================" << endl;
+
+    auto inicio = chrono::high_resolution_clock::now(); // inicia el cronometro
+    raiz.cargarDiccionario(palabras_d1, 0, palabras_d1.size() - 1);
+    auto fin = chrono::high_resolution_clock::now(); // fin del cronometro
+    chrono::duration<double> duracion_creacion = fin - inicio;
+
+    cout << "Tiempo de creación: " << duracion_creacion.count() << endl;
+    cout << "cantidad de nodos: " << raiz.getCantN() << endl;
+    cout << "Peso del arbol: " << ((float)sizeof(nodoT)*(float)raiz.getCantN())/1000000 << " megabytes" << endl;
+
+    // buscamos palabras al "azar" del diccionario 1
     
+    cout << "================Busqueda================" << endl;
+    int claves_encontradas = 0;
+    
+    inicio = chrono::high_resolution_clock::now();
+    for (int i = 0; i < 10000; i++){
+        int numero_aleatorio = rand()%largo_d2;
+        if (raiz.search(palabras_d2[numero_aleatorio])) claves_encontradas++;
+    }
+    fin = chrono::high_resolution_clock::now();
+    chrono::duration<double> duracion_busquedas = fin - inicio;
+    
+    cout << "Claves encontradas: " << claves_encontradas << endl;
+    cout << "Tiempo de busquedas: " << duracion_busquedas.count() << endl;
+    
+    cout << "================Insersion================" << endl;
 
-    sudowodo.remove("10");
-    sudowodo.remove("13");
-    sudowodo.print();
-    cout << "cantidad de nodos: " << sudowodo.getCantN() << endl;
+    int claves_insertadas = 0;
+    
+    inicio = chrono::high_resolution_clock::now();
+    for (int i = 0; i < 5000; i++){
+        int numero_aleatorio = rand()%largo_d2;
+        if (raiz.insert(palabras_d2[numero_aleatorio])) claves_insertadas++;
+    }
+    fin = chrono::high_resolution_clock::now();
+    chrono::duration<double> duracion_insersiones = fin - inicio;
+    
+    cout << "Claves insertadas: " << claves_insertadas << endl;
+    cout << "Tiempo de insersiones: " << duracion_insersiones.count() << endl;
+    cout << "cantidad de nodos: " << raiz.getCantN() << endl;
+    cout << "Peso del arbol: " << ((float)sizeof(nodoT)*(float)raiz.getCantN())/1000000 << " megabytes" << endl;
+    
+    cout << "================eliminacion================" << endl;
 
+    int claves_removidas = 0;
+    
+    inicio = chrono::high_resolution_clock::now();
+    for (int i = 0; i < 5000; i++){
+        int numero_aleatorio = rand()%largo_d2;
+        if (raiz.remove(palabras_d2[numero_aleatorio])) claves_removidas++;
+    }
+    fin = chrono::high_resolution_clock::now();
+    chrono::duration<double> duracion_eliminaciones = fin - inicio;
+    
+    cout << "Claves removidas: " << claves_removidas << endl;
+    cout << "Tiempo de eliminación: " << duracion_eliminaciones.count() << endl;
+    cout << "cantidad de nodos: " << raiz.getCantN() << endl;
+    cout << "Peso del arbol: " << ((float)sizeof(nodoT)*(float)raiz.getCantN())/1000000 << " megabytes" << endl;
+    
+    cout << "================Fin================" << endl;
 
     return 0;
 }
